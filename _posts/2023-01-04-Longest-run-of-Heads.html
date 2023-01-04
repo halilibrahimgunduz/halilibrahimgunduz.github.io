@@ -1,0 +1,210 @@
+---
+layout: post
+title: "Longest run of heads"
+subtitle: "Computing the length of the longest run of heads."
+background: '/img/posts/Longest-head/head.jpg'
+---
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>LongestrunofHeads</title><meta name="generator" content="MATLAB 9.13"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-01-04"><meta name="DC.source" content="LongestrunofHeads.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">% % LongestrunofHeads</span>
+clear; close; clc;
+</pre><p>In a (fair) coin toss experiment, the coin is tossed n times. The result is a series of heads (H) and tails (T). A subsequence of consecutive heads (tails) is called heads (tails): Sequence 1: THHHHTTTTHHHHTTTTHHHHTH... Sequence 2: THTHTTTHTTTTTHTHTTTHTTH... from <a href="https://www.maa.org/sites/default/files/images/upload_library/22/Polya/07468342.di020742.02p0021g.pdf">https://www.maa.org/sites/default/files/images/upload_library/22/Polya/07468342.di020742.02p0021g.pdf</a> we analyze which of the sequences is more likely to have arisen from actual coin tossing and which one is the imposter?</p><pre class="codeinput"><span class="comment">% We solve this famous problem from Davidson, R., &amp; MacKinnon, J. G. (1993)</span>
+<span class="comment">% Estimation and inference in econometrics (Vol. 63). New York: Oxford:</span>
+
+<span class="comment">% "A well-worn example of a nonstochastic probability limit is given by</span>
+<span class="comment">% considering the limit of the sequence of proportions of heads in a series</span>
+<span class="comment">% of independent tosses of an unbiased coin. It is worth demonstrating</span>
+<span class="comment">% formally that the probability limit is indeed one-half, since this will</span>
+<span class="comment">% give us the opportunity to see some useful techniques of proof and</span>
+<span class="comment">% acquire some intuition about how probability limits differ from ordinary</span>
+<span class="comment">% ones."</span>
+</pre><pre class="codeinput">tic
+rng(729183,<span class="string">'multFibonacci'</span>)                                                 <span class="comment">% Control random number generator</span>
+</pre><p>Our aim is show the convergence in probability of <img src="/img/posts/Longest-head/eq1.png" alt="$a_{n}$"> to 1/2 for a unbiased coin:</p><p><img src="/img/posts/Longest-head/eq2.png" alt="$$plim_{n \rightarrow \infty} a_{n}=\frac{1}{2}$$"></p><p>In case of biased coin, this plim is unvalid.</p><pre class="codeinput">n=[10 20 50 100 200 500 1000];                                              <span class="comment">% number of trials</span>
+p=0.5;                                                                      <span class="comment">% probability of heads(tails)</span>
+bias=[-0.2 -0.15 -0.1 -0.05 0 0.05 0.1 0.15 0.2];                           <span class="comment">% we inject bias</span>
+MC=1000;                                                                    <span class="comment">% the number of Monte carlo simulation experiments</span>
+nn=size(n,2);
+Seq=cell(nn,1);                                         <span class="comment">% sets of random sequences of heads and tails for any value of n.</span>
+longest=zeros(nn,MC);
+theLength=zeros(nn,3);                                  <span class="comment">% the length of the longest run of heads in an arbitrary sequence of heads and tails.</span>
+Mu_mc=zeros(nn,MC);Var_mc=zeros(nn,MC);
+theMu=zeros(nn,3);theVar=zeros(nn,3);
+bb=size(bias,2);
+sonuc=cell(bb,3);
+<span class="keyword">for</span> b=1:bb
+    <span class="keyword">for</span> j=1:nn
+        trial=zeros(n(j),1);
+        <span class="keyword">for</span> i=1:n(j)
+            trial=rand(i,MC)&lt;(bias(b)+p);
+        <span class="keyword">end</span>
+        Seq{j,1}=double(trial);
+        <span class="keyword">for</span> mc=1:MC
+            <span class="keyword">if</span> Seq{j,1}(:,mc)==0
+                longest(j,mc)=0;
+            <span class="keyword">else</span>
+                longest(j,mc)=max(accumarray(nonzeros((cumsum(~Seq{j,1}(:,mc))+1).*Seq{j,1}(:,mc)),1));
+            <span class="keyword">end</span>
+            Mu_mc(j,mc)=mean(Seq{j,1}(:,mc));
+            Var_mc(j,mc)=var(Seq{j,1}(:,mc));
+        <span class="keyword">end</span>
+        theLength(j,:)=[mean(longest(j,:)) median(longest(j,:)) std(longest(j,:))];
+        theMu(j,:)=[mean(Mu_mc(j,:)) median(Mu_mc(j,:)) std(Mu_mc(j,:))];
+        theVar(j,:)=[mean(Var_mc(j,:)) median(Var_mc(j,:)) std(Var_mc(j,:))];
+    <span class="keyword">end</span>
+        sonuc{b,1}=theLength;
+        sonuc{b,2}=theMu;
+        sonuc{b,3}=theVar;
+<span class="keyword">end</span>
+Sonucxlsx=cell2mat(sonuc) ;                                                 <span class="comment">% All outcomes of the Monte Carlo Simulation values</span>
+toc
+</pre><pre class="codeoutput">Elapsed time is 167.833585 seconds.
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2022b</a><br></p></div>
+</pre><p>The results are below <img src="/img/posts/Longest-head/Screenshot_1.jpg" 
+</pre><p>continue... <img src="/img/posts/Longest-head/Screenshot_2.jpg" 
+</pre><p>continue... <img src="/img/posts/Longest-head/Screenshot_3.jpg" 
+<!--
+##### SOURCE BEGIN #####
+% % LongestrunofHeads
+clear; close; clc;
+
+%% 
+% In a (fair) coin toss experiment, the coin is tossed n times. 
+% The result is a series of heads (H) and tails (T). A subsequence of
+% consecutive heads (tails) is called heads (tails):
+% Sequence 1: THHHHTTTTHHHHTTTTHHHHTH...
+% Sequence 2: THTHTTTHTTTTTHTHTTTHTTH...
+% from https://www.maa.org/sites/default/files/images/upload_library/22/Polya/07468342.di020742.02p0021g.pdf
+% we analyze which of the sequences is more likely to have arisen from
+% actual coin tossing and which one is the imposter?
+
+% We solve this famous problem from Davidson, R., & MacKinnon, J. G. (1993)
+% Estimation and inference in econometrics (Vol. 63). New York: Oxford:
+
+% "A well-worn example of a nonstochastic probability limit is given by 
+% considering the limit of the sequence of proportions of heads in a series
+% of independent tosses of an unbiased coin. It is worth demonstrating 
+% formally that the probability limit is indeed one-half, since this will 
+% give us the opportunity to see some useful techniques of proof and 
+% acquire some intuition about how probability limits differ from ordinary
+% ones."
+%%
+tic
+rng(729183,'multFibonacci')                                                 % Control random number generator
+%%
+% Our aim is show the convergence in probability of $a_{n}$ to 1/2 for a unbiased coin:
+%  
+% $$plim_{n \rightarrow \infty} a_{n}=\frac{1}{2}$$
+% 
+% In case of biased coin, this plim is unvalid. 
+%%
+
+n=[10 20 50 100 200 500 1000];                                              % number of trials
+p=0.5;                                                                      % probability of heads(tails)
+bias=[-0.2 -0.15 -0.1 -0.05 0 0.05 0.1 0.15 0.2];                           % we inject bias  
+MC=1000;                                                                    % the number of Monte carlo simulation experiments
+nn=size(n,2);
+Seq=cell(nn,1);                                         % sets of random sequences of heads and tails for any value of n.
+longest=zeros(nn,MC);
+theLength=zeros(nn,3);                                  % the length of the longest run of heads in an arbitrary sequence of heads and tails.                                                
+Mu_mc=zeros(nn,MC);Var_mc=zeros(nn,MC);
+theMu=zeros(nn,3);theVar=zeros(nn,3);
+bb=size(bias,2);
+sonuc=cell(bb,3);
+for b=1:bb
+    for j=1:nn 
+        trial=zeros(n(j),1);
+        for i=1:n(j)
+            trial=rand(i,MC)<(bias(b)+p);
+        end
+        Seq{j,1}=double(trial);
+        for mc=1:MC
+            if Seq{j,1}(:,mc)==0
+                longest(j,mc)=0;
+            else
+                longest(j,mc)=max(accumarray(nonzeros((cumsum(~Seq{j,1}(:,mc))+1).*Seq{j,1}(:,mc)),1));
+            end
+            Mu_mc(j,mc)=mean(Seq{j,1}(:,mc));
+            Var_mc(j,mc)=var(Seq{j,1}(:,mc)); 
+        end
+        theLength(j,:)=[mean(longest(j,:)) median(longest(j,:)) std(longest(j,:))];
+        theMu(j,:)=[mean(Mu_mc(j,:)) median(Mu_mc(j,:)) std(Mu_mc(j,:))];
+        theVar(j,:)=[mean(Var_mc(j,:)) median(Var_mc(j,:)) std(Var_mc(j,:))];
+    end
+        sonuc{b,1}=theLength;
+        sonuc{b,2}=theMu;
+        sonuc{b,3}=theVar;      
+end
+Sonucxlsx=cell2mat(sonuc) ;                                                 % All outcomes of the Monte Carlo Simulation values
+toc
+
+
+##### SOURCE END #####
+--></body></html>
